@@ -4,10 +4,16 @@ const Student=require('../models/student')
 
 router.get('/',async(req,res)=>{
     try{
-        const student=await Student.find()
+        const student=await Student.find().maxTimeMS(10000);
         res.json(student)
-    }catch(err){
-        res.send("Error "+ err)
+    }catch (error) {
+  if (error instanceof MongooseError && error.message.includes("buffering timed out")) {
+    // Handle the timeout error
+    console.error("Query timed out. Please try again later.");
+  } else {
+    // Handle other errors
+    console.error("An error occurred:", error);
+  }
     }
 })
 
